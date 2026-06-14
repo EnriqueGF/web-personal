@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { SITE, SOCIALS, SKILLS } from '../consts';
+import TechChip from '../components/TechChip.astro';
 
 const experience = [
   {
@@ -65,13 +66,14 @@ const education = [
           <h1 class="text-4xl font-semibold sm:text-5xl">Hola, soy {SITE.author}</h1>
           <div class="mt-5 space-y-4 text-lg leading-relaxed text-[var(--fg-muted)]">
             <p>
-              Me dedico al diseño y desarrollo de software, movido por una pasión de toda la vida
-              por crear y avanzar en la informática. Empecé de forma <span class="marker font-medium">autodidacta a los 15 años</span>.
+              Software &amp; AI Engineer con base en {SITE.location}. Diseño y construyo el lado
+              servidor de productos web —APIs, arquitecturas backend e integraciones— con especial
+              foco en llevar la <span class="marker font-medium">IA generativa a casos de uso reales</span>.
             </p>
             <p>
-              Me considero un desarrollador con habilidades horizontales en el campo técnico,
-              enfocado en el aprendizaje continuo. Hoy trabajo con fuerte foco en
-              <strong class="text-[var(--fg)]">IA generativa y LLMs</strong>.
+              Soy <strong class="text-[var(--fg)]">autodidacta</strong> y me considero un perfil con
+              habilidades horizontales en lo técnico: me muevo con soltura entre lenguajes y stacks,
+              y priorizo el código fiable y mantenible por encima de la moda de turno.
             </p>
           </div>
         </div>
@@ -106,14 +108,6 @@ const education = [
               <span class="font-mono text-xs text-[var(--fg-muted)]">{job.period}</span>
             </div>
             <p class="text-sm text-[var(--fg-muted)]">{job.mode}</p>
-            <ul class="mt-3 space-y-1.5 text-sm text-[var(--fg-muted)]">
-              {job.points.map((pt) => (
-                <li class="flex gap-2">
-                  <span class="mt-2 h-1 w-1 shrink-0 rounded-full bg-[var(--accent)]" aria-hidden="true"></span>
-                  <span>{pt}</span>
-                </li>
-              ))}
-            </ul>
           </li>
         ))}
       </ol>
@@ -127,7 +121,7 @@ const education = [
           <div>
             <h3 class="mb-2 text-sm font-semibold text-[var(--accent)]">{group.area}</h3>
             <ul class="flex flex-wrap gap-2">
-              {group.items.map((item) => <li class="chip">{item}</li>)}
+              {group.items.map((item) => <TechChip name={item.name} icon={item.icon} />)}
             </ul>
           </div>
         ))}

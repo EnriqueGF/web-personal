@@ -30,22 +30,51 @@ export const NAV_LINKS = [
   { label: 'Sobre mí', href: '/sobre-mi' },
 ] as const;
 
+/** Una tecnología del stack; `icon` es un slug resuelto en src/lib/techIcons.ts */
+export type Skill = { name: string; icon?: string };
+export type SkillGroup = { area: string; items: Skill[] };
+
 /** Stack técnico destacado, agrupado por área (basado en tu CV). */
-export const SKILLS = [
+export const SKILLS: SkillGroup[] = [
   {
     area: 'Backend',
-    items: ['PHP / Laravel', 'Python / Django', 'FastAPI', 'C# (.NET)', 'Java', 'APIs REST · Microservicios', 'OOP · SOLID · DDD'],
+    items: [
+      { name: 'PHP', icon: 'php' },
+      { name: 'Laravel', icon: 'laravel' },
+      { name: 'Python', icon: 'python' },
+      { name: 'Django', icon: 'django' },
+      { name: 'FastAPI', icon: 'fastapi' },
+      { name: 'C#' },
+      { name: '.NET', icon: 'dotnet' },
+      { name: 'Java' },
+    ],
   },
   {
     area: 'IA / LLMs',
-    items: ['OpenAI', 'Claude', 'Gemini', 'Agentes con CrewAI', 'IA generativa en el ciclo de desarrollo'],
+    items: [
+      { name: 'OpenAI', icon: 'openai' },
+      { name: 'Claude', icon: 'claude' },
+      { name: 'Gemini', icon: 'gemini' },
+      { name: 'CrewAI' },
+    ],
   },
   {
     area: 'Datos',
-    items: ['MySQL', 'MariaDB', 'PostgreSQL', 'Minería y extracción de datos'],
+    items: [
+      { name: 'MySQL', icon: 'mysql' },
+      { name: 'MariaDB', icon: 'mariadb' },
+      { name: 'PostgreSQL', icon: 'postgresql' },
+    ],
   },
   {
     area: 'DevOps & Cloud',
-    items: ['AWS', 'Docker', 'Heroku', 'GitLab CI/CD', 'WebSockets', 'Swagger / OpenAPI'],
+    items: [
+      { name: 'AWS' },
+      { name: 'Docker', icon: 'docker' },
+      { name: 'Heroku' },
+      { name: 'GitLab CI/CD', icon: 'gitlab' },
+      { name: 'WebSockets' },
+      { name: 'Swagger / OpenAPI', icon: 'swagger' },
+    ],
   },
-] as const;
+];

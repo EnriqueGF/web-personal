@@ -1,0 +1,19 @@
+---
+import { TECH_ICONS } from '../lib/techIcons';
+
+interface Props {
+  name: string;
+  icon?: string;
+}
+const { name, icon } = Astro.props;
+const path = icon ? TECH_ICONS[icon] : undefined;
+---
+
+<li class="chip">
+  {path && (
+    <svg class="-ml-0.5 mr-1.5 h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d={path} />
+    </svg>
+  )}
+  {name}
+</li>

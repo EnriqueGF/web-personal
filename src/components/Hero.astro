@@ -1,19 +1,12 @@
 ---
 import { SITE } from '../consts';
-import Sprig from './decor/Sprig.astro';
-import Squiggle from './decor/Squiggle.astro';
-import Arrow from './decor/Arrow.astro';
 ---
 
 <section class="mesh-bg relative overflow-hidden">
-  <!-- ramitas botánicas de fondo -->
-  <Sprig class="pointer-events-none absolute -left-6 top-10 hidden h-48 text-[var(--accent)] opacity-20 md:block" />
-  <Sprig flip class="pointer-events-none absolute -right-4 bottom-0 hidden h-56 text-[var(--accent)] opacity-15 lg:block" />
-
   <div class="relative mx-auto grid max-w-5xl items-center gap-10 px-4 py-20 sm:px-6 sm:py-28 md:grid-cols-[1.3fr_1fr]">
     <!-- Texto -->
     <div class="animate-fade-up">
-      <p class="handwritten mb-1 text-3xl">¡Hola! me llamo</p>
+      <p class="handwritten mb-2 text-xl">Software &amp; AI Engineer</p>
 
       <h1 class="hero-title text-6xl font-semibold leading-[0.95] tracking-tight sm:text-7xl">
         Enrique
@@ -21,39 +14,31 @@ import Arrow from './decor/Arrow.astro';
       </h1>
 
       <p class="mt-5 max-w-xl text-2xl leading-snug text-[var(--fg)]">
-        Construyo <span class="relative inline-block">backend
-          <Squiggle class="absolute -bottom-2 left-0 h-3 w-full text-[var(--accent)]" />
-        </span> e <span class="marker font-medium">inteligencia artificial</span> que funcionan de verdad.
+        Construyo backends sólidos e <span class="marker font-medium">inteligencia artificial</span>
+        que llega a producción.
       </p>
 
       <p class="mt-6 max-w-xl text-lg leading-relaxed text-[var(--fg-muted)]">
-        Llevo programando desde los 15 — empecé por pura curiosidad y nunca paré.
-        Hoy diseño sistemas backend escalables y trasteo a diario con LLMs y agentes,
-        desde {SITE.location}.
+        Con base en {SITE.location}, llevo más de seis años diseñando APIs, arquitecturas backend
+        e integraciones de LLMs para producto real. Me importa el detalle: que lo que entrego sea
+        fiable, escalable y fácil de mantener.
       </p>
 
-      <div class="relative mt-8 flex flex-wrap items-center gap-3">
+      <div class="mt-8 flex flex-wrap items-center gap-3">
         <a href="/proyectos" class="btn-primary text-base">
-          Ver lo que he hecho
+          Ver proyectos
           <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </a>
         <a href="/sobre-mi" class="btn-ghost">
           Sobre mí
           <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </a>
-
-        <!-- anotación a mano apuntando al botón -->
-        <span class="decor-organic pointer-events-none absolute -bottom-14 left-8 hidden items-center gap-1 sm:flex">
-          <Arrow class="h-10 w-10 -scale-x-100 rotate-12 text-[var(--accent)]" />
-          <span class="handwritten text-xl">empieza por aquí</span>
-        </span>
       </div>
     </div>
 
-    <!-- Foto enmarcada con forma orgánica, tape y ramita -->
+    <!-- Foto -->
     <div class="relative mx-auto mt-10 w-60 sm:w-72 md:mt-0">
-      <Sprig class="pointer-events-none absolute -right-8 -top-10 z-0 h-32 text-[var(--accent)] opacity-50" />
-      <div class="tilt-l relative z-10 aspect-square overflow-hidden rounded-full border-4 border-[var(--bg-elevated)] shadow-[0_18px_50px_-12px_rgba(21,128,61,0.4)]">
+      <div class="relative z-10 aspect-square overflow-hidden rounded-full border-4 border-[var(--bg-elevated)] shadow-[0_18px_50px_-12px_rgba(21,128,61,0.4)]">
         <picture>
           <source srcset="/img/enrique.webp" type="image/webp" />
           <img
@@ -66,7 +51,6 @@ import Arrow from './decor/Arrow.astro';
           />
         </picture>
       </div>
-      <p class="handwritten mt-4 text-center text-xl">este soy yo 👋</p>
     </div>
   </div>
 </section>
