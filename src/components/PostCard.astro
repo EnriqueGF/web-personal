@@ -1,0 +1,37 @@
+---
+import FormattedDate from './FormattedDate.astro';
+
+interface Props {
+  href: string;
+  title: string;
+  description: string;
+  pubDate: Date;
+  tags?: string[];
+}
+const { href, title, description, pubDate, tags = [] } = Astro.props;
+---
+
+<article class="card p-6">
+  <a href={href} class="group flex flex-col gap-3">
+    <div class="flex items-center gap-3 text-xs text-[var(--fg-muted)]">
+      <FormattedDate date={pubDate} />
+      {tags.length > 0 && (
+        <>
+          <span aria-hidden="true">·</span>
+          <span class="font-mono text-[var(--accent)]">#{tags[0]}</span>
+        </>
+      )}
+    </div>
+
+    <h3 class="text-lg font-semibold leading-snug transition-colors group-hover:text-[var(--accent)]">
+      {title}
+    </h3>
+
+    <p class="text-sm leading-relaxed text-[var(--fg-muted)]">{description}</p>
+
+    <span class="inline-flex items-center gap-1 text-sm font-medium text-[var(--accent)]">
+      Leer artículo
+      <svg class="h-4 w-4 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </span>
+  </a>
+</article>

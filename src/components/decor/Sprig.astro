@@ -1,0 +1,31 @@
+---
+// Ramita botánica dibujada a mano. Usa currentColor → tíñela con text-[color].
+interface Props {
+  class?: string;
+  flip?: boolean;
+}
+const { class: cls = '', flip = false } = Astro.props;
+---
+<svg
+  class={`decor-organic ${cls}`}
+  style={flip ? 'transform: scaleX(-1)' : undefined}
+  viewBox="0 0 120 160"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2.4"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+>
+  <!-- tallo -->
+  <path d="M60 156 C 56 120 64 96 58 62 C 54 40 62 24 60 6" />
+  <!-- hojas a la derecha -->
+  <path d="M60 128 C 78 126 92 116 96 100 C 78 100 64 110 60 128 Z" fill="currentColor" fill-opacity="0.12" />
+  <path d="M58 96 C 76 96 90 86 95 70 C 77 70 62 80 58 96 Z" fill="currentColor" fill-opacity="0.12" />
+  <path d="M59 60 C 75 60 88 51 93 36 C 76 37 63 46 59 60 Z" fill="currentColor" fill-opacity="0.12" />
+  <!-- hojas a la izquierda -->
+  <path d="M59 112 C 41 112 27 102 23 86 C 41 86 55 96 59 112 Z" fill="currentColor" fill-opacity="0.12" />
+  <path d="M58 78 C 41 78 28 69 24 54 C 41 54 54 63 58 78 Z" fill="currentColor" fill-opacity="0.12" />
+  <!-- brote superior -->
+  <path d="M60 16 C 68 14 74 8 75 0 C 67 2 62 8 60 16 Z" fill="currentColor" fill-opacity="0.12" />
+</svg>

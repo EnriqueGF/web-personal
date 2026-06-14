@@ -1,0 +1,86 @@
+---
+import '@fontsource-variable/inter';
+import '@fontsource-variable/jetbrains-mono';
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Grain from '../components/decor/Grain.astro';
+import { SITE } from '../consts';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  /** Si true, no añade el sufijo con el nombre del sitio. */
+  rawTitle?: boolean;
+}
+
+const {
+  title,
+  description = SITE.description,
+  image = '/og-image.png',
+  rawTitle = false,
+} = Astro.props;
+
+const pageTitle = !title ? SITE.title : rawTitle ? title : `${title} · ${SITE.name}`;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? SITE.url).toString();
+const ogImage = new URL(image, Astro.site ?? SITE.url).toString();
+---
+
+<!doctype html>
+<html lang={SITE.lang} class="scroll-pt-24">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content={SITE.author} />
+    <link rel="canonical" href={canonical} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content="es_ES" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={SITE.name}
+      href={new URL('rss.xml', Astro.site ?? SITE.url).toString()}
+    />
+
+    <!-- Inicializa el tema antes de pintar para evitar parpadeo (FOUC) -->
+    <script is:inline>
+      // Modo claro por defecto; oscuro si ?theme=dark o si se eligió antes.
+      const t = new URLSearchParams(location.search).get('theme') || localStorage.getItem('theme');
+      if (t === 'dark') document.documentElement.classList.add('dark');
+    </script>
+  </head>
+  <body class="min-h-screen flex flex-col">
+    <Grain />
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:rounded-lg focus:bg-[var(--accent)] focus:px-4 focus:py-2 focus:text-[var(--accent-contrast)]"
+    >
+      Saltar al contenido
+    </a>
+    <Header />
+    <main id="main" class="flex-1">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

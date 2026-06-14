@@ -1,0 +1,20 @@
+---
+// Flecha curva dibujada a mano, para anotaciones tipo cuaderno.
+interface Props {
+  class?: string;
+}
+const { class: cls = '' } = Astro.props;
+---
+<svg
+  class={`decor-organic ${cls}`}
+  viewBox="0 0 90 80"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="3"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+>
+  <path d="M8 10 C 20 40, 40 62, 72 64" />
+  <path d="M56 56 C 64 60, 70 63, 73 64 C 71 57, 69 50, 68 44" />
+</svg>

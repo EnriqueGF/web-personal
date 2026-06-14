@@ -1,0 +1,79 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+
+const projects = (await getCollection('projects', ({ data }) => !data.draft))
+  .sort((a, b) => a.data.order - b.data.order);
+
+// Conjunto de tecnologías para los filtros.
+const allTech = [...new Set(projects.flatMap((p) => p.data.tech))].sort();
+---
+
+<BaseLayout title="Proyectos" description="Portfolio de proyectos de Enrique García-Ferrer.">
+  <section class="mx-auto max-w-5xl px-4 sm:px-6 py-16">
+    <header class="mb-10 animate-fade-up">
+      <p class="handwritten text-2xl">en lo que he metido las manos</p>
+      <h1 class="mt-1 text-4xl font-semibold sm:text-5xl">Proyectos</h1>
+      <p class="mt-3 max-w-2xl text-[var(--fg-muted)]">
+        Una selección de cosas que he construido. Toca una tecnología para filtrar y curiosear.
+      </p>
+    </header>
+
+    {allTech.length > 0 && (
+      <div class="mb-8 flex flex-wrap gap-2" role="group" aria-label="Filtrar por tecnología">
+        <button class="chip filter-btn is-active" data-filter="all" type="button">Todos</button>
+        {allTech.map((t) => (
+          <button class="chip filter-btn" data-filter={t} type="button">{t}</button>
+        ))}
+      </div>
+    )}
+
+    {projects.length === 0 ? (
+      <p class="text-[var(--fg-muted)]">Pronto añadiré aquí mis proyectos.</p>
+    ) : (
+      <div id="projects-grid" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {projects.map((p) => (
+          <div class="project-item" data-tech={p.data.tech.join('|')}>
+            <ProjectCard
+              href={`/proyectos/${p.id}`}
+              title={p.data.title}
+              description={p.data.description}
+              tech={p.data.tech}
+              year={p.data.year}
+              featured={p.data.featured}
+              image={p.data.heroImage}
+            />
+          </div>
+        ))}
+      </div>
+    )}
+  </section>
+</BaseLayout>
+
+<style>
+  .filter-btn { cursor: pointer; }
+  .filter-btn.is-active {
+    background-color: var(--accent);
+    color: var(--accent-contrast);
+    border-color: var(--accent);
+  }
+</style>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
+  const items = document.querySelectorAll<HTMLElement>('.project-item');
+
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const filter = btn.dataset.filter;
+      buttons.forEach((b) => b.classList.toggle('is-active', b === btn));
+
+      items.forEach((item) => {
+        const tech = (item.dataset.tech ?? '').split('|');
+        const show = filter === 'all' || tech.includes(filter ?? '');
+        item.style.display = show ? '' : 'none';
+      });
+    });
+  });
+</script>
