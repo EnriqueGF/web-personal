@@ -306,6 +306,38 @@
   }
   .prose img { border-radius: 0.75rem; border: 1px solid var(--border); }
   .prose hr { border-color: var(--border); margin: 2.5rem 0; }
+
+  /* Tablas: bordes nítidos y cabecera monoespaciada en verde (estética terminal) */
+  .prose table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+    display: block;
+    overflow-x: auto;
+  }
+  .prose thead th {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    text-align: left;
+    color: var(--accent);
+    background-color: var(--surface);
+  }
+  .prose th,
+  .prose td {
+    border: 1px solid var(--border);
+    padding: 0.55rem 0.85rem;
+    vertical-align: top;
+  }
+  .prose tbody tr:nth-child(even) td {
+    background-color: color-mix(in srgb, var(--surface) 45%, transparent);
+  }
+  .prose td:first-child {
+    font-weight: 600;
+    color: var(--fg);
+    white-space: nowrap;
+  }
 }
 
 /* Animación suave de entrada para secciones */
