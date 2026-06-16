@@ -1,0 +1,28 @@
+# Levanta el backend del chat en la red 'proxy-network' (la misma que usa Nginx Proxy Manager).
+# No publica puertos al host: el reverse proxy lo alcanza por nombre (web-personal-chat:3000).
+#
+#   docker compose up -d --build
+#
+# La MISTRAL_API_KEY se toma del archivo .env de esta carpeta (no se commitea) o del entorno.
+
+services:
+  web-personal-chat:
+    build: .
+    image: web-personal-chat
+    container_name: web-personal-chat
+    restart: unless-stopped
+    environment:
+      MISTRAL_API_KEY: ${MISTRAL_API_KEY:?Falta MISTRAL_API_KEY (ponla en server/.env)}
+      PORT: "3000"
+      # Solo se aceptan peticiones de navegador desde estos orígenes (anti-abuso):
+      ALLOWED_ORIGINS: "https://enriquegf.com,https://www.enriquegf.com"
+      # Descomenta para ajustar límites sin reconstruir:
+      # RL_PER_MINUTE: "6"
+      # RL_PER_DAY: "40"
+      # RL_GLOBAL_PER_DAY: "800"
+    networks:
+      - proxy-network
+
+networks:
+  proxy-network:
+    external: true

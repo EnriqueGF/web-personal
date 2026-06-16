@@ -1,0 +1,19 @@
+{
+  "name": "web-personal-chat",
+  "version": "1.0.0",
+  "description": "Backend del chatbot RAG (Mistral) de la web personal de Enrique García-Ferrer",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "build:kb": "node scripts/build-kb.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "express": "^4.21.2"
+  }
+}
