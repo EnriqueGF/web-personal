@@ -6,8 +6,16 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-  // Cambia esto por tu dominio definitivo cuando lo tengas (afecta a sitemap, RSS y canonical).
-  site: 'https://enriquegarcia.dev',
+  // Dominio del sitio (afecta a sitemap, RSS y canonical).
+  site: 'https://enriquegf.com',
+  // Multi-idioma: español por defecto en la raíz (/) e inglés bajo /en/.
+  i18n: {
+    defaultLocale: 'es',
+    locales: ['es', 'en'],
+    routing: {
+      prefixDefaultLocale: false,
+    },
+  },
   integrations: [mdx(), sitemap()],
   vite: {
     plugins: [tailwindcss()],

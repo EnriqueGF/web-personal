@@ -1,10 +1,31 @@
 ---
 import ThemeToggle from './ThemeToggle.astro';
-import { NAV_LINKS, SITE } from '../consts';
+import LanguageToggle from './LanguageToggle.astro';
+import { SITE } from '../consts';
+import { ROUTES, useTranslations } from '../i18n/utils';
+import type { Lang } from '../i18n/ui';
 
-const path = Astro.url.pathname;
-const isActive = (href: string) =>
-  href === '/' ? path === '/' : path.startsWith(href);
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const r = ROUTES[lang];
+
+const navLinks = [
+  { label: t.nav.home, href: r.home },
+  { label: t.nav.projects, href: r.projects },
+  { label: t.nav.blog, href: r.blog },
+  { label: t.nav.about, href: r.about },
+];
+
+const normalize = (s: string) => s.replace(/\/$/, '') || '/';
+const path = normalize(Astro.url.pathname);
+const homeHref = normalize(r.home);
+const isActive = (href: string) => {
+  const h = normalize(href);
+  return h === homeHref ? path === homeHref : path === h || path.startsWith(h + '/');
+};
 ---
 
 <header
@@ -12,7 +33,7 @@ const isActive = (href: string) =>
   style="background-color: color-mix(in srgb, var(--bg) 80%, transparent);"
 >
   <div class="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:px-6">
-    <a href="/" class="group flex items-center gap-2 font-semibold">
+    <a href={r.home} class="group flex items-center gap-2 font-semibold">
       <span
         class="grid h-8 min-w-8 place-items-center rounded-lg px-1.5 font-mono text-xs font-semibold tracking-tight text-[var(--accent-contrast)]"
         style="background-image: linear-gradient(135deg, var(--color-brand-500), var(--color-teal-accent));"
@@ -23,9 +44,9 @@ const isActive = (href: string) =>
       <span class="hidden sm:inline">{SITE.name}</span>
     </a>
 
-    <nav class="flex items-center gap-1" aria-label="Navegación principal">
+    <nav class="flex items-center gap-1" aria-label={t.nav.primaryLabel}>
       {
-        NAV_LINKS.map((link) => (
+        navLinks.map((link) => (
           <a
             href={link.href}
             class:list={[
@@ -40,7 +61,8 @@ const isActive = (href: string) =>
           </a>
         ))
       }
-      <div class="ml-2">
+      <div class="ml-2 flex items-center gap-1.5">
+        <LanguageToggle lang={lang} />
         <ThemeToggle />
       </div>
     </nav>

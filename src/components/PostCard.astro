@@ -1,5 +1,7 @@
 ---
 import FormattedDate from './FormattedDate.astro';
+import { useTranslations } from '../i18n/utils';
+import type { Lang } from '../i18n/ui';
 
 interface Props {
   href: string;
@@ -7,14 +9,16 @@ interface Props {
   description: string;
   pubDate: Date;
   tags?: string[];
+  lang?: Lang;
 }
-const { href, title, description, pubDate, tags = [] } = Astro.props;
+const { href, title, description, pubDate, tags = [], lang = 'es' } = Astro.props;
+const t = useTranslations(lang);
 ---
 
 <article class="card p-6">
   <a href={href} class="group flex flex-col gap-3">
     <div class="flex items-center gap-3 text-xs text-[var(--fg-muted)]">
-      <FormattedDate date={pubDate} />
+      <FormattedDate date={pubDate} lang={lang} />
       {tags.length > 0 && (
         <>
           <span aria-hidden="true">·</span>
@@ -30,7 +34,7 @@ const { href, title, description, pubDate, tags = [] } = Astro.props;
     <p class="text-sm leading-relaxed text-[var(--fg-muted)]">{description}</p>
 
     <span class="inline-flex items-center gap-1 text-sm font-medium text-[var(--accent)]">
-      Leer artículo
+      {t.blog.readArticle}
       <svg class="h-4 w-4 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
     </span>
   </a>

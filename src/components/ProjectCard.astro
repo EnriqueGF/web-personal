@@ -1,4 +1,7 @@
 ---
+import { useTranslations } from '../i18n/utils';
+import type { Lang } from '../i18n/ui';
+
 interface Props {
   href: string;
   title: string;
@@ -7,20 +10,22 @@ interface Props {
   year?: number;
   featured?: boolean;
   image?: string;
+  lang?: Lang;
 }
-const { href, title, description, tech = [], year, featured = false, image } = Astro.props;
+const { href, title, description, tech = [], year, featured = false, image, lang = 'es' } = Astro.props;
+const t = useTranslations(lang);
 ---
 
 <a href={href} class="card group relative flex flex-col overflow-hidden">
   {featured && (
-    <span class="chip absolute right-3 top-3 z-10 backdrop-blur-sm">★ destacado</span>
+    <span class="chip absolute right-3 top-3 z-10 backdrop-blur-sm">★ {t.projects.featured}</span>
   )}
 
   {image && (
     <div class="aspect-[16/9] overflow-hidden border-b border-[var(--border)]">
       <img
         src={image}
-        alt={`Captura de ${title}`}
+        alt={t.projects.screenshotOf(title)}
         class="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.04]"
         loading="lazy"
       />
@@ -39,14 +44,14 @@ const { href, title, description, tech = [], year, featured = false, image } = A
 
     {tech.length > 0 && (
       <ul class="mt-auto flex flex-wrap gap-2 pt-2">
-        {tech.slice(0, 5).map((t) => (
-          <li class="chip">{t}</li>
+        {tech.slice(0, 5).map((item) => (
+          <li class="chip">{item}</li>
         ))}
       </ul>
     )}
 
     <span class="inline-flex items-center gap-1 text-sm font-medium text-[var(--accent)]">
-      Ver proyecto
+      {t.projects.viewProject}
       <svg class="h-4 w-4 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
     </span>
   </div>

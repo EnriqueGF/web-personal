@@ -7,6 +7,8 @@ import Footer from '../components/Footer.astro';
 import Grain from '../components/decor/Grain.astro';
 import ChatWidget from '../components/ChatWidget.astro';
 import { SITE } from '../consts';
+import { getLangFromUrl, useTranslations, getAlternateUrl } from '../i18n/utils';
+import type { Lang } from '../i18n/ui';
 
 interface Props {
   title?: string;
@@ -14,22 +16,41 @@ interface Props {
   image?: string;
   /** Si true, no añade el sufijo con el nombre del sitio. */
   rawTitle?: boolean;
+  /** Idioma de la página. Si no se pasa, se deduce de la URL. */
+  lang?: Lang;
 }
+
+const lang = Astro.props.lang ?? getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
 
 const {
   title,
-  description = SITE.description,
+  description = t.site.description,
   image = '/og-image.png',
   rawTitle = false,
 } = Astro.props;
 
-const pageTitle = !title ? SITE.title : rawTitle ? title : `${title} · ${SITE.name}`;
+const pageTitle = !title
+  ? `${SITE.name} — ${t.footer.role}`
+  : rawTitle
+    ? title
+    : `${title} · ${SITE.name}`;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? SITE.url).toString();
 const ogImage = new URL(image, Astro.site ?? SITE.url).toString();
+
+// Enlace a la versión en el otro idioma (selector, hreflang y auto-detección).
+const altLang: Lang = lang === 'es' ? 'en' : 'es';
+const altPath = getAlternateUrl(Astro.url.pathname, lang);
+const altUrl = new URL(altPath, Astro.site ?? SITE.url).toString();
+const selfHreflang = lang === 'es' ? 'es-ES' : 'en-US';
+const altHreflang = altLang === 'es' ? 'es-ES' : 'en-US';
+// x-default apunta a la versión por defecto (español).
+const defaultUrl = lang === 'es' ? canonical : altUrl;
+const rssHref = new URL(lang === 'en' ? 'en/rss.xml' : 'rss.xml', Astro.site ?? SITE.url).toString();
 ---
 
 <!doctype html>
-<html lang={SITE.lang} class="scroll-pt-24">
+<html lang={t.site.htmlLang} class="scroll-pt-24">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -41,13 +62,18 @@ const ogImage = new URL(image, Astro.site ?? SITE.url).toString();
     <meta name="author" content={SITE.author} />
     <link rel="canonical" href={canonical} />
 
+    <!-- Alternativas de idioma -->
+    <link rel="alternate" hreflang={selfHreflang} href={canonical} />
+    <link rel="alternate" hreflang={altHreflang} href={altUrl} />
+    <link rel="alternate" hreflang="x-default" href={defaultUrl} />
+
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
-    <meta property="og:locale" content="es_ES" />
+    <meta property="og:locale" content={t.site.ogLocale} />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -60,8 +86,23 @@ const ogImage = new URL(image, Astro.site ?? SITE.url).toString();
       rel="alternate"
       type="application/rss+xml"
       title={SITE.name}
-      href={new URL('rss.xml', Astro.site ?? SITE.url).toString()}
+      href={rssHref}
     />
+
+    <!-- Auto-detección de idioma: en la primera visita (sin elección previa) redirige
+         a la versión que prefiere el navegador. La elección manual se guarda y manda. -->
+    <script is:inline define:vars={{ current: lang, dest: altPath }}>
+      (function () {
+        try {
+          var stored = localStorage.getItem('lang');
+          var preferred =
+            stored || ((navigator.language || 'es').toLowerCase().indexOf('en') === 0 ? 'en' : 'es');
+          if (!stored && preferred !== current) {
+            location.replace(dest);
+          }
+        } catch (e) {}
+      })();
+    </script>
 
     <!-- Inicializa el tema antes de pintar para evitar parpadeo (FOUC) -->
     <script is:inline>
@@ -76,13 +117,13 @@ const ogImage = new URL(image, Astro.site ?? SITE.url).toString();
       href="#main"
       class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:rounded-lg focus:bg-[var(--accent)] focus:px-4 focus:py-2 focus:text-[var(--accent-contrast)]"
     >
-      Saltar al contenido
+      {t.skipToContent}
     </a>
-    <Header />
+    <Header lang={lang} />
     <main id="main" class="flex-1">
       <slot />
     </main>
-    <Footer />
-    <ChatWidget />
+    <Footer lang={lang} />
+    <ChatWidget lang={lang} />
   </body>
 </html>

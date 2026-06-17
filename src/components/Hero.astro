@@ -1,40 +1,43 @@
 ---
-import { SITE } from '../consts';
+import { ROUTES, useTranslations } from '../i18n/utils';
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const r = ROUTES[lang];
 ---
 
 <section class="mesh-bg relative overflow-hidden">
   <div class="relative mx-auto grid max-w-5xl items-center gap-10 px-4 py-20 sm:px-6 sm:py-28 md:grid-cols-[1.3fr_1fr]">
     <!-- Texto -->
     <div class="animate-fade-up">
-      <p class="handwritten mb-2 text-xl">Software &amp; AI Engineer</p>
+      <p class="handwritten mb-2 text-xl">{t.hero.kicker}</p>
 
       <h1 class="hero-title text-6xl font-semibold leading-[0.95] tracking-tight sm:text-7xl">
         Enrique
         <span class="text-[var(--accent)]">.</span>
       </h1>
 
-      <p class="mt-5 max-w-xl text-2xl leading-snug text-[var(--fg)]">
-        Construyo backends sólidos e <span class="marker font-medium">inteligencia artificial</span>
-        que llega a producción.
-      </p>
+      <p class="mt-5 max-w-xl text-2xl leading-snug text-[var(--fg)]" set:html={t.hero.tagline} />
 
       <p class="mt-6 max-w-xl text-lg leading-relaxed text-[var(--fg-muted)]">
-        Con base en {SITE.location}, llevo más de seis años diseñando APIs, arquitecturas backend
-        e integraciones de LLMs para producto real. Me importa el detalle: que lo que entrego sea
-        fiable, escalable y fácil de mantener.
+        {t.hero.intro}
       </p>
 
       <div class="mt-8 flex flex-wrap items-center gap-3">
-        <a href="/proyectos" class="btn-primary text-base">
-          Ver proyectos
+        <a href={r.projects} class="btn-primary text-base">
+          {t.hero.ctaProjects}
           <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </a>
-        <a href="/sobre-mi" class="btn-ghost">
-          Sobre mí
+        <a href={r.about} class="btn-ghost">
+          {t.hero.ctaAbout}
           <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </a>
         <button type="button" data-open-chat class="btn-ghost" aria-haspopup="dialog">
-          Habla con mi IA
+          {t.hero.ctaChat}
           <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 0 1-.9-3.8A8.38 8.38 0 0 1 12.5 3 8.38 8.38 0 0 1 21 11.5z"/></svg>
         </button>
       </div>
@@ -47,7 +50,7 @@ import { SITE } from '../consts';
           <source srcset="/img/enrique.webp" type="image/webp" />
           <img
             src="/img/enrique.jpg"
-            alt="Retrato de Enrique García-Ferrer"
+            alt={t.hero.photoAlt}
             width="288"
             height="288"
             class="aspect-square w-full object-cover"

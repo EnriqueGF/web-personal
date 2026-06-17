@@ -1,0 +1,85 @@
+---
+import { getCollection } from 'astro:content';
+import ProjectCard from '../ProjectCard.astro';
+import { ROUTES, useTranslations } from '../../i18n/utils';
+import type { Lang } from '../../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const r = ROUTES[lang];
+const slugOf = (id: string) => id.replace(/^en\//, '');
+
+const projects = (await getCollection('projects', ({ data }) => !data.draft && data.lang === lang))
+  .sort((a, b) => a.data.order - b.data.order);
+
+// Conjunto de tecnologías para los filtros.
+const allTech = [...new Set(projects.flatMap((p) => p.data.tech))].sort();
+---
+
+<section class="mx-auto max-w-5xl px-4 sm:px-6 py-16">
+  <header class="mb-10 animate-fade-up">
+    <p class="handwritten text-2xl">{t.projects.kicker}</p>
+    <h1 class="mt-1 text-4xl font-semibold sm:text-5xl">{t.projects.title}</h1>
+    <p class="mt-3 max-w-2xl text-[var(--fg-muted)]">{t.projects.intro}</p>
+  </header>
+
+  {allTech.length > 0 && (
+    <div class="mb-8 flex flex-wrap gap-2" role="group" aria-label={t.projects.filterLabel}>
+      <button class="chip filter-btn is-active" data-filter="all" type="button">{t.projects.filterAll}</button>
+      {allTech.map((tech) => (
+        <button class="chip filter-btn" data-filter={tech} type="button">{tech}</button>
+      ))}
+    </div>
+  )}
+
+  {projects.length === 0 ? (
+    <p class="text-[var(--fg-muted)]">{t.projects.empty}</p>
+  ) : (
+    <div id="projects-grid" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {projects.map((p) => (
+        <div class="project-item" data-tech={p.data.tech.join('|')}>
+          <ProjectCard
+            href={`${r.projects}/${slugOf(p.id)}`}
+            title={p.data.title}
+            description={p.data.description}
+            tech={p.data.tech}
+            year={p.data.year}
+            featured={p.data.featured}
+            image={p.data.heroImage}
+            lang={lang}
+          />
+        </div>
+      ))}
+    </div>
+  )}
+</section>
+
+<style>
+  .filter-btn { cursor: pointer; }
+  .filter-btn.is-active {
+    background-color: var(--accent);
+    color: var(--accent-contrast);
+    border-color: var(--accent);
+  }
+</style>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
+  const items = document.querySelectorAll<HTMLElement>('.project-item');
+
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const filter = btn.dataset.filter;
+      buttons.forEach((b) => b.classList.toggle('is-active', b === btn));
+
+      items.forEach((item) => {
+        const tech = (item.dataset.tech ?? '').split('|');
+        const show = filter === 'all' || tech.includes(filter ?? '');
+        item.style.display = show ? '' : 'none';
+      });
+    });
+  });
+</script>

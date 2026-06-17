@@ -1,14 +1,39 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { ui } from '../i18n/ui';
+
+const es = ui.es.notFound;
+const en = ui.en.notFound;
 ---
 
-<BaseLayout title="404 — Página no encontrada">
+<BaseLayout lang="es" title={es.metaTitle}>
   <section class="mesh-bg grid min-h-[60vh] place-items-center px-4 text-center">
-    <div class="animate-fade-up">
+    <div class="animate-fade-up" data-i18n-404>
       <p class="font-mono text-7xl font-bold text-gradient">404</p>
-      <h1 class="mt-4 text-2xl font-bold">Esta página se perdió en el repositorio</h1>
-      <p class="mt-2 text-[var(--fg-muted)]">No encuentro lo que buscas. Quizá quieras volver al inicio.</p>
-      <a href="/" class="btn-primary mt-6">Volver al inicio</a>
+      <h1 class="mt-4 text-2xl font-bold" data-es={es.heading} data-en={en.heading}>{es.heading}</h1>
+      <p class="mt-2 text-[var(--fg-muted)]" data-es={es.text} data-en={en.text}>{es.text}</p>
+      <a href="/" class="btn-primary mt-6" data-es={es.cta} data-en={en.cta} data-href-es="/" data-href-en="/en/">{es.cta}</a>
     </div>
   </section>
 </BaseLayout>
+
+<script>
+  // El 404 se sirve para cualquier ruta desconocida: detectamos el idioma en cliente.
+  (function () {
+    const path = location.pathname;
+    let lang: 'es' | 'en' = path === '/en' || path.startsWith('/en/') ? 'en' : 'es';
+    if (lang === 'es') {
+      try {
+        const stored = localStorage.getItem('lang');
+        if (stored === 'en') lang = 'en';
+        else if (!stored && (navigator.language || '').toLowerCase().indexOf('en') === 0) lang = 'en';
+      } catch (e) {}
+    }
+    if (lang !== 'en') return;
+    document.querySelectorAll<HTMLElement>('[data-i18n-404] [data-en]').forEach((el) => {
+      el.textContent = el.dataset.en || el.textContent;
+      if (el instanceof HTMLAnchorElement && el.dataset.hrefEn) el.href = el.dataset.hrefEn;
+    });
+    document.documentElement.lang = 'en';
+  })();
+</script>

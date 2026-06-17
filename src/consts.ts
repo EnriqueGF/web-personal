@@ -8,8 +8,8 @@ export const SITE = {
   title: 'Enrique García-Ferrer — Software & AI Engineer',
   description:
     'Software & AI Engineer especializado en backend, LLMs y arquitecturas escalables. Proyectos, blog y experiencia.',
-  // Cambia esto por tu dominio definitivo (debe coincidir con astro.config.mjs).
-  url: 'https://enriquegarcia.dev',
+  // Dominio del sitio (debe coincidir con astro.config.mjs).
+  url: 'https://enriquegf.com',
   lang: 'es',
   author: 'Enrique García-Ferrer Jiménez',
   location: 'Córdoba, España',
@@ -22,13 +22,6 @@ export const SOCIALS = {
   linkedin: 'https://www.linkedin.com/in/enriquegarciaferrer22',
   email: 'enrik.garcia98@gmail.com',
 } as const;
-
-export const NAV_LINKS = [
-  { label: 'Inicio', href: '/' },
-  { label: 'Proyectos', href: '/proyectos' },
-  { label: 'Blog', href: '/blog' },
-  { label: 'Sobre mí', href: '/sobre-mi' },
-] as const;
 
 /** Una tecnología del stack; `icon` es un slug resuelto en src/lib/techIcons.ts */
 export type Skill = { name: string; icon?: string };

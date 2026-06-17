@@ -1,0 +1,133 @@
+---
+import { SITE, SOCIALS, SKILLS } from '../../consts';
+import TechChip from '../TechChip.astro';
+import { useTranslations, translateSkillArea } from '../../i18n/utils';
+import type { Lang } from '../../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+
+type Job = { role: string; company: string; mode: string; period: string };
+type Edu = { title: string; place: string; period: string };
+
+const experienceByLang: Record<Lang, Job[]> = {
+  es: [
+    { role: 'Backend Developer', company: 'Ideable Solutions', mode: 'Remoto', period: 'sep 2021 — actualidad' },
+    { role: 'Backend & DevOps Engineer', company: 'Silmaril Technologies', mode: 'Autónomo · Remoto', period: 'jun 2024 — dic 2024' },
+    { role: 'Backend Developer', company: 'Salutic', mode: 'Remoto', period: 'oct 2020 — sep 2021' },
+    { role: 'Desarrollador de software', company: 'Invepat', mode: 'Córdoba, España', period: 'nov 2019 — oct 2020' },
+  ],
+  en: [
+    { role: 'Backend Developer', company: 'Ideable Solutions', mode: 'Remote', period: 'Sep 2021 — present' },
+    { role: 'Backend & DevOps Engineer', company: 'Silmaril Technologies', mode: 'Freelance · Remote', period: 'Jun 2024 — Dec 2024' },
+    { role: 'Backend Developer', company: 'Salutic', mode: 'Remote', period: 'Oct 2020 — Sep 2021' },
+    { role: 'Software Developer', company: 'Invepat', mode: 'Córdoba, Spain', period: 'Nov 2019 — Oct 2020' },
+  ],
+};
+
+const educationByLang: Record<Lang, Edu[]> = {
+  es: [
+    { title: 'Técnico Superior en Desarrollo de Aplicaciones Web (DAW)', place: 'IES Trassierra · Córdoba', period: '2018 — 2020' },
+    { title: 'Técnico en Sistemas Microinformáticos y Redes (SMR)', place: 'IES Medina Azahara · Córdoba', period: '2015 — 2017' },
+  ],
+  en: [
+    { title: 'Higher Vocational Degree in Web Application Development (DAW)', place: 'IES Trassierra · Córdoba', period: '2018 — 2020' },
+    { title: 'Vocational Degree in Microcomputer Systems and Networks (SMR)', place: 'IES Medina Azahara · Córdoba', period: '2015 — 2017' },
+  ],
+};
+
+const experience = experienceByLang[lang];
+const education = educationByLang[lang];
+---
+
+<section class="mx-auto max-w-3xl px-4 sm:px-6 py-16">
+  <!-- Intro -->
+  <header class="animate-fade-up">
+    <p class="handwritten text-2xl">{t.about.kicker}</p>
+    <div class="mt-1 flex flex-col gap-6 sm:flex-row sm:items-start sm:gap-8">
+      <div class="flex-1">
+        <h1 class="text-4xl font-semibold sm:text-5xl">{t.about.greeting} {SITE.author}</h1>
+        <div class="mt-5 space-y-4 text-lg leading-relaxed text-[var(--fg-muted)]">
+          <p set:html={t.about.intro1} />
+          <p set:html={t.about.intro2} />
+        </div>
+      </div>
+      <div class="relative mx-auto w-40 shrink-0 sm:mx-0">
+        <div class="tilt-r aspect-square overflow-hidden rounded-full border-4 border-[var(--bg-elevated)] shadow-[0_14px_40px_-12px_rgba(21,128,61,0.35)]">
+          <picture>
+            <source srcset="/img/enrique.webp" type="image/webp" />
+            <img src="/img/enrique.jpg" alt={t.hero.photoAlt} width="160" height="160" class="aspect-square w-full object-cover" loading="lazy" />
+          </picture>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-6 flex flex-wrap gap-3">
+      <a href={SOCIALS.linkedin} target="_blank" rel="noopener" class="btn-primary">LinkedIn</a>
+      <a href={SOCIALS.github} target="_blank" rel="noopener" class="btn-ghost">GitHub</a>
+      <a href={`mailto:${SOCIALS.email}`} class="btn-ghost">Email</a>
+    </div>
+  </header>
+
+  <!-- Experiencia -->
+  <div class="mt-16">
+    <h2 class="mb-8 text-2xl font-bold">{t.about.experienceTitle}</h2>
+    <ol class="relative border-l border-[var(--border)]">
+      {experience.map((job) => (
+        <li class="mb-10 ml-6">
+          <span class="absolute -left-[7px] mt-1.5 h-3 w-3 rounded-full bg-[var(--accent)]" aria-hidden="true"></span>
+          <div class="flex flex-wrap items-baseline justify-between gap-2">
+            <h3 class="text-lg font-semibold">
+              {job.role} <span class="text-[var(--accent)]">· {job.company}</span>
+            </h3>
+            <span class="font-mono text-xs text-[var(--fg-muted)]">{job.period}</span>
+          </div>
+          <p class="text-sm text-[var(--fg-muted)]">{job.mode}</p>
+        </li>
+      ))}
+    </ol>
+  </div>
+
+  <!-- Stack -->
+  <div class="mt-12">
+    <h2 class="mb-6 text-2xl font-bold">{t.about.stackTitle}</h2>
+    <div class="space-y-4">
+      {SKILLS.map((group) => (
+        <div>
+          <h3 class="mb-2 text-sm font-semibold text-[var(--accent)]">{translateSkillArea(group.area, lang)}</h3>
+          <ul class="flex flex-wrap gap-2">
+            {group.items.map((item) => <TechChip name={item.name} icon={item.icon} />)}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- Educación -->
+  <div class="mt-12">
+    <h2 class="mb-6 text-2xl font-bold">{t.about.educationTitle}</h2>
+    <div class="space-y-4">
+      {education.map((ed) => (
+        <div class="card p-5">
+          <div class="flex flex-wrap items-baseline justify-between gap-2">
+            <h3 class="font-semibold">{ed.title}</h3>
+            <span class="font-mono text-xs text-[var(--fg-muted)]">{ed.period}</span>
+          </div>
+          <p class="text-sm text-[var(--fg-muted)]">{ed.place}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- Contacto -->
+  <div class="mt-16 card mesh-bg p-8 text-center">
+    <h2 class="text-2xl font-bold">{t.about.contactTitle}</h2>
+    <p class="mx-auto mt-2 max-w-md text-[var(--fg-muted)]">{t.about.contactIntro}</p>
+    <div class="mt-6 flex flex-wrap justify-center gap-3">
+      <a href={`mailto:${SOCIALS.email}`} class="btn-primary">{SOCIALS.email}</a>
+    </div>
+  </div>
+</section>

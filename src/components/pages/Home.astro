@@ -1,0 +1,143 @@
+---
+import { getCollection } from 'astro:content';
+import Hero from '../Hero.astro';
+import ProjectCard from '../ProjectCard.astro';
+import PostCard from '../PostCard.astro';
+import Divider from '../decor/Divider.astro';
+import Sprig from '../decor/Sprig.astro';
+import TechChip from '../TechChip.astro';
+import { SKILLS, SOCIALS } from '../../consts';
+import { ROUTES, useTranslations, translateSkillArea } from '../../i18n/utils';
+import type { Lang } from '../../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const r = ROUTES[lang];
+
+const slugOf = (id: string) => id.replace(/^en\//, '');
+
+const projects = (await getCollection('projects', ({ data }) => !data.draft && data.lang === lang))
+  .filter((p) => p.data.featured)
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 3);
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft && data.lang === lang))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 2);
+
+const tilt = ['tilt-l', '', 'tilt-r'];
+---
+
+<Hero lang={lang} />
+
+<Divider class="my-16" />
+
+<!-- PROYECTOS -->
+<section class="mx-auto max-w-5xl px-4 sm:px-6">
+  <div class="mb-10 flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <p class="handwritten text-2xl">{t.home.projectsKicker}</p>
+      <h2 class="mt-1 text-4xl font-semibold">{t.home.projectsTitle}</h2>
+    </div>
+    <a href={r.projects} class="group inline-flex items-center gap-1 text-sm font-medium text-[var(--accent)]">
+      {t.home.projectsViewAll}
+      <svg class="h-4 w-4 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+  </div>
+
+  {projects.length === 0 ? (
+    <p class="text-[var(--fg-muted)]">{t.home.projectsEmpty}</p>
+  ) : (
+    <div class="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
+      {projects.map((p, i) => (
+        <div class={tilt[i % tilt.length]}>
+          <ProjectCard
+            href={`${r.projects}/${slugOf(p.id)}`}
+            title={p.data.title}
+            description={p.data.description}
+            tech={p.data.tech}
+            year={p.data.year}
+            featured={p.data.featured}
+            image={p.data.heroImage}
+            lang={lang}
+          />
+        </div>
+      ))}
+    </div>
+  )}
+</section>
+
+<Divider class="my-16" />
+
+<!-- STACK — sin cajas idénticas: etiquetas manuscritas + nubes de chips -->
+<section class="relative mx-auto max-w-5xl overflow-hidden px-4 sm:px-6">
+  <Sprig flip class="pointer-events-none absolute -right-6 top-0 hidden h-44 text-[var(--accent)] opacity-15 sm:block" />
+  <div class="mb-10 max-w-xl">
+    <p class="handwritten text-2xl">{t.home.stackKicker}</p>
+    <h2 class="mt-1 text-4xl font-semibold">{t.home.stackTitle}</h2>
+    <p class="mt-3 text-[var(--fg-muted)]">{t.home.stackIntro}</p>
+  </div>
+
+  <div class="grid gap-x-10 gap-y-8 sm:grid-cols-2">
+    {SKILLS.map((group) => (
+      <div class="border-l-2 border-[var(--border)] pl-5">
+        <p class="handwritten mb-3 text-xl">{translateSkillArea(group.area, lang)}</p>
+        <ul class="flex flex-wrap gap-2">
+          {group.items.map((item) => <TechChip name={item.name} icon={item.icon} />)}
+        </ul>
+      </div>
+    ))}
+  </div>
+</section>
+
+<Divider class="my-16" />
+
+<!-- BLOG -->
+<section class="mx-auto max-w-5xl px-4 sm:px-6">
+  <div class="mb-10 flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <p class="handwritten text-2xl">{t.home.blogKicker}</p>
+      <h2 class="mt-1 text-4xl font-semibold">{t.home.blogTitle}</h2>
+    </div>
+    <a href={r.blog} class="group inline-flex items-center gap-1 text-sm font-medium text-[var(--accent)]">
+      {t.home.blogViewAll}
+      <svg class="h-4 w-4 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+  </div>
+
+  {posts.length === 0 ? (
+    <p class="text-[var(--fg-muted)]">{t.home.blogEmpty}</p>
+  ) : (
+    <div class="grid gap-7 sm:grid-cols-2">
+      {posts.map((post) => (
+        <PostCard
+          href={`${r.blog}/${slugOf(post.id)}`}
+          title={post.data.title}
+          description={post.data.description}
+          pubDate={post.data.pubDate}
+          tags={post.data.tags}
+          lang={lang}
+        />
+      ))}
+    </div>
+  )}
+</section>
+
+<!-- CIERRE — invitación cálida -->
+<section class="mx-auto max-w-5xl px-4 sm:px-6 pt-20">
+  <div class="mesh-bg relative overflow-hidden rounded-3xl border border-[var(--border)] px-6 py-16 text-center">
+    <Sprig class="pointer-events-none absolute -left-4 -bottom-6 h-40 text-[var(--accent)] opacity-20" />
+    <Sprig flip class="pointer-events-none absolute -right-4 -top-6 h-40 text-[var(--accent)] opacity-20" />
+    <p class="handwritten text-2xl">{t.home.contactKicker}</p>
+    <h2 class="mx-auto mt-1 max-w-2xl text-3xl font-semibold sm:text-4xl">
+      {t.home.contactTitle}
+    </h2>
+    <div class="mt-8 flex flex-wrap justify-center gap-3">
+      <a href={`mailto:${SOCIALS.email}`} class="btn-primary text-base">{t.home.contactCta}</a>
+      <a href={r.about} class="btn-ghost">{t.home.contactAbout}</a>
+    </div>
+  </div>
+</section>

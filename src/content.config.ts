@@ -15,6 +15,8 @@ const blog = defineCollection({
     tags: z.array(z.string()).default([]),
     heroImage: z.string().optional(),
     draft: z.boolean().default(false),
+    // Idioma de la entrada. Las versiones en inglés viven en la subcarpeta en/.
+    lang: z.enum(['es', 'en']).default('es'),
   }),
 });
 
@@ -36,6 +38,8 @@ const projects = defineCollection({
     demo: z.string().url().optional(),
     heroImage: z.string().optional(),
     draft: z.boolean().default(false),
+    // Idioma de la ficha. Las versiones en inglés viven en la subcarpeta en/.
+    lang: z.enum(['es', 'en']).default('es'),
   }),
 });
 

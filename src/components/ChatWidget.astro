@@ -4,12 +4,31 @@
  * backend RAG (Mistral) en `/api/chat`. Sin frameworks: HTML + script inline, al estilo del
  * resto del sitio. El endpoint se puede sobreescribir con PUBLIC_CHAT_API_URL (útil en dev).
  */
+import { useTranslations } from '../i18n/utils';
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'es' } = Astro.props;
+const tc = useTranslations(lang).chat;
 const endpoint = import.meta.env.PUBLIC_CHAT_API_URL || '/api/chat';
 ---
 
-<div id="egf-chat" data-endpoint={endpoint}>
+<div
+  id="egf-chat"
+  data-endpoint={endpoint}
+  data-lang={lang}
+  data-greeting={tc.greeting}
+  data-suggestions={JSON.stringify(tc.suggestions)}
+  data-name={tc.assistant}
+  data-you={tc.you}
+  data-err-generic={tc.errorGeneric}
+  data-err-reply={tc.errorReply}
+  data-err-connection={tc.errorConnection}
+>
   <!-- Botón flotante -->
-  <button id="egf-chat-toggle" type="button" aria-label="Abrir el asistente" aria-expanded="false" aria-controls="egf-chat-panel">
+  <button id="egf-chat-toggle" type="button" aria-label={tc.open} aria-expanded="false" aria-controls="egf-chat-panel">
     <svg class="egf-ico-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 0 1-.9-3.8A8.38 8.38 0 0 1 12.5 3 8.38 8.38 0 0 1 21 11.5z" />
     </svg>
@@ -19,16 +38,16 @@ const endpoint = import.meta.env.PUBLIC_CHAT_API_URL || '/api/chat';
   </button>
 
   <!-- Panel -->
-  <section id="egf-chat-panel" role="dialog" aria-label="Asistente de Enrique" aria-modal="false" hidden>
+  <section id="egf-chat-panel" role="dialog" aria-label={tc.dialogLabel} aria-modal="false" hidden>
     <header class="egf-head">
       <div class="egf-head-title">
         <span class="egf-dot" aria-hidden="true"></span>
         <div>
-          <strong>Asistente</strong>
-          <small>Pregúntame sobre Enrique</small>
+          <strong>{tc.assistant}</strong>
+          <small>{tc.subtitle}</small>
         </div>
       </div>
-      <button id="egf-chat-x" type="button" aria-label="Cerrar el asistente">
+      <button id="egf-chat-x" type="button" aria-label={tc.close}>
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg>
       </button>
     </header>
@@ -36,8 +55,8 @@ const endpoint = import.meta.env.PUBLIC_CHAT_API_URL || '/api/chat';
     <div id="egf-chat-log" class="egf-log" aria-live="polite"></div>
 
     <form id="egf-chat-form" class="egf-form" autocomplete="off">
-      <textarea id="egf-chat-input" rows="1" maxlength="1000" placeholder="Escribe tu pregunta…" aria-label="Tu mensaje"></textarea>
-      <button type="submit" aria-label="Enviar">
+      <textarea id="egf-chat-input" rows="1" maxlength="1000" placeholder={tc.placeholder} aria-label={tc.placeholder}></textarea>
+      <button type="submit" aria-label={tc.send}>
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4 20-7z" /></svg>
       </button>
     </form>
@@ -203,6 +222,15 @@ const endpoint = import.meta.env.PUBLIC_CHAT_API_URL || '/api/chat';
 
   const root = document.getElementById('egf-chat')!;
   const endpoint = root.dataset.endpoint || '/api/chat';
+  const lang = root.dataset.lang || 'es';
+  const STR = {
+    greeting: root.dataset.greeting || '',
+    name: root.dataset.name || 'Asistente',
+    you: root.dataset.you || 'Tú',
+    errGeneric: root.dataset.errGeneric || 'Error',
+    errReply: root.dataset.errReply || 'Error',
+    errConnection: root.dataset.errConnection || 'Error',
+  };
   const toggle = document.getElementById('egf-chat-toggle')!;
   const panel = document.getElementById('egf-chat-panel')!;
   const closeBtn = document.getElementById('egf-chat-x')!;
@@ -232,13 +260,12 @@ const endpoint = import.meta.env.PUBLIC_CHAT_API_URL || '/api/chat';
       .join('');
   }
 
-  const SUGGESTIONS = [
-    '¿Con qué está hecha la web?',
-    '¿Qué tecnologías usa Enrique?',
-    '¿Cómo funciona este chatbot?',
-    '¿Qué experiencia tiene con IA?',
-    '¿Cómo contacto con Enrique?',
-  ];
+  let SUGGESTIONS: string[] = [];
+  try {
+    SUGGESTIONS = JSON.parse(root.dataset.suggestions || '[]');
+  } catch {
+    SUGGESTIONS = [];
+  }
 
   // Crea una fila (avatar + nombre + burbuja) y devuelve la burbuja para poder actualizarla.
   function addMessage(role: 'user' | 'bot', html: string): HTMLDivElement {
@@ -247,7 +274,7 @@ const endpoint = import.meta.env.PUBLIC_CHAT_API_URL || '/api/chat';
 
     const avatar = document.createElement('div');
     avatar.className = 'egf-avatar';
-    avatar.textContent = role === 'user' ? 'Tú' : '>_';
+    avatar.textContent = role === 'user' ? STR.you : '>_';
     avatar.setAttribute('aria-hidden', 'true');
 
     const wrap = document.createElement('div');
@@ -261,7 +288,7 @@ const endpoint = import.meta.env.PUBLIC_CHAT_API_URL || '/api/chat';
     if (role === 'bot') {
       const name = document.createElement('span');
       name.className = 'egf-name';
-      name.textContent = 'Asistente';
+      name.textContent = STR.name;
       wrap.append(name, bubble);
     } else {
       wrap.append(bubble);
@@ -299,12 +326,7 @@ const endpoint = import.meta.env.PUBLIC_CHAT_API_URL || '/api/chat';
     toggle.setAttribute('aria-expanded', 'true');
     if (!greeted) {
       greeted = true;
-      addMessage(
-        'bot',
-        render(
-          '¡Hola! 👋 Soy el asistente de Enrique. Puedo contarte sobre su experiencia, proyectos, stack técnico o cómo contactarlo. ¿Qué quieres saber?'
-        )
-      );
+      addMessage('bot', render(STR.greeting));
       showSuggestions();
     }
     setTimeout(() => input.focus(), 50);
@@ -361,15 +383,15 @@ const endpoint = import.meta.env.PUBLIC_CHAT_API_URL || '/api/chat';
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message, history: history.slice(0, -1) }),
+        body: JSON.stringify({ message, history: history.slice(0, -1), lang }),
       });
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
         typing.className = 'egf-msg error';
-        typing.innerHTML = render(data.error || 'Algo ha ido mal. Inténtalo de nuevo.');
+        typing.innerHTML = render(data.error || STR.errGeneric);
       } else {
-        const reply = data.reply || 'Lo siento, no he podido generar una respuesta.';
+        const reply = data.reply || STR.errReply;
         typing.innerHTML = render(reply);
         history.push({ role: 'assistant', content: reply });
         // Recomendaciones dinámicas que devuelve el backend tras cada respuesta.
@@ -379,7 +401,7 @@ const endpoint = import.meta.env.PUBLIC_CHAT_API_URL || '/api/chat';
       }
     } catch {
       typing.className = 'egf-msg error';
-      typing.innerHTML = render('No he podido conectar con el asistente. Revisa tu conexión e inténtalo de nuevo.');
+      typing.innerHTML = render(STR.errConnection);
     } finally {
       log.scrollTop = log.scrollHeight;
       busy = false;
