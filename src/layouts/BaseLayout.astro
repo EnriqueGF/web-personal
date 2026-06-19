@@ -81,6 +81,16 @@ const rssHref = new URL(lang === 'en' ? 'en/rss.xml' : 'rss.xml', Astro.site ?? 
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
 
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BXBGNFWSVD"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-BXBGNFWSVD');
+    </script>
+
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link
       rel="alternate"
